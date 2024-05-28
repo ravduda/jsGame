@@ -5,14 +5,14 @@ let player;
 
 let obstacles = [];
 let obstacleSpeed = 2;
-let interval = 2000;
 let lastTime = Date.now();
 
 function initCanvas() {
   canvas = document.createElement("canvas");
   context = canvas.getContext("2d");
-  canvas.width = 480;
-  canvas.height = 320;
+
+  canvas.width = WIDTH;
+  canvas.height = HEIGHT;
   document.body.appendChild(canvas);
 }
 
@@ -57,7 +57,7 @@ function moveObstacles() {
 }
 
 function generateObstacle() {
-  const width = Math.random() * (canvas.width / 2);
+  const width = canvas.width / 3;
   const x = Math.random() * (canvas.width - width);
   obstacles.push({ x, y: 0, width, height: 20 });
 }
@@ -87,12 +87,12 @@ function update() {
   drawObstacles();
 
   if (detectCollision()) {
-    alert("Game Over");
+    //alert("Game Over");
     document.location.reload();
   }
 
   let currentTime = Date.now();
-  if (currentTime - lastTime > interval) {
+  if (currentTime - lastTime > INTERVAL) {
     generateObstacle();
     lastTime = currentTime;
   }
