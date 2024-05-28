@@ -19,7 +19,7 @@ function initCanvas() {
 function initPlayer() {
   player = {
     x: canvas.width / 2 - 15,
-    y: canvas.height - 30,
+    y: canvas.height - 32,
     width: 30,
     height: 30,
     speed: 5,
