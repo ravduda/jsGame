@@ -1,3 +1,3 @@
 const main = () => {
-  console.log("Hello !");
+  console.log("napis !");
 };
