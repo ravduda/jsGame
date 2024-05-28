@@ -4,8 +4,9 @@ let context;
 let player;
 
 let obstacles = [];
-let obstacleSpeed = 2;
+let marks = [];
 let lastTime = Date.now();
+let lastMarkTime = Date.now();
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -22,7 +23,6 @@ function initPlayer() {
     y: canvas.height - 32,
     width: 30,
     height: 30,
-    speed: 5,
     dx: 0,
   };
 }
@@ -39,6 +39,21 @@ function drawObstacles() {
   });
 }
 
+function drawMarks() {
+  context.fillStyle = "#00FF00";
+  marks.forEach((mark) => {
+    context.beginPath();
+    context.arc(
+      mark.x + mark.radius,
+      mark.y + mark.radius,
+      mark.radius,
+      0,
+      Math.PI * 2
+    );
+    context.fill();
+  });
+}
+
 function movePlayer() {
   player.x += player.dx;
 
@@ -52,7 +67,13 @@ function movePlayer() {
 
 function moveObstacles() {
   obstacles.forEach((obstacle) => {
-    obstacle.y += obstacleSpeed;
+    obstacle.y += OBSTACLE_SPEED;
+  });
+}
+
+function moveMarks() {
+  marks.forEach((mark) => {
+    mark.y += MARK_SPEED;
   });
 }
 
@@ -60,6 +81,12 @@ function generateObstacle() {
   const width = canvas.width / 3;
   const x = Math.random() * (canvas.width - width);
   obstacles.push({ x, y: 0, width, height: 20 });
+}
+
+function generateMark() {
+  const radius = 10;
+  const x = Math.random() * (canvas.width - radius * 2);
+  marks.push({ x, y: 0, radius: radius });
 }
 
 function detectCollision() {
@@ -82,9 +109,11 @@ function update() {
 
   movePlayer();
   moveObstacles();
+  moveMarks();
 
   drawPlayer();
   drawObstacles();
+  drawMarks();
 
   if (detectCollision()) {
     //alert("Game Over");
@@ -97,6 +126,11 @@ function update() {
     lastTime = currentTime;
   }
 
+  if (currentTime - lastMarkTime > MARK_INTERVAL) {
+    generateMark();
+    lastMarkTime = currentTime;
+  }
+
   obstacles = obstacles.filter((obstacle) => obstacle.y < canvas.height);
 
   requestAnimationFrame(update);
@@ -104,9 +138,9 @@ function update() {
 
 function keyDown(e) {
   if (e.key === "ArrowRight" || e.key === "Right") {
-    player.dx = player.speed;
+    player.dx = PLAYER_SPEED;
   } else if (e.key === "ArrowLeft" || e.key === "Left") {
-    player.dx = -player.speed;
+    player.dx = -PLAYER_SPEED;
   }
 }
 
