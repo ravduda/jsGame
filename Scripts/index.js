@@ -7,6 +7,7 @@ let obstacles = [];
 let marks = [];
 let lastTime = Date.now();
 let lastMarkTime = Date.now();
+let points = 0;
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -86,7 +87,8 @@ function generateObstacle() {
 function generateMark() {
   const radius = 10;
   const x = Math.random() * (canvas.width - radius * 2);
-  marks.push({ x, y: 0, radius: radius });
+  const value = Math.floor(Math.random() * (5 - 3 + 1)) + 3;
+  marks.push({ x, y: 0, radius: radius, value: value });
 }
 
 function detectCollision() {
@@ -104,6 +106,23 @@ function detectCollision() {
   return false;
 }
 
+function detectCollectingMark() {
+  let returnedPoints = 0;
+  for (let i = 0; i < marks.length; i++) {
+    let mark = marks[i];
+    if (
+      player.x < mark.x + mark.radius * 2 &&
+      player.x + player.width > mark.x &&
+      player.y < mark.y + mark.radius * 2 &&
+      player.height + player.y > mark.y
+    ) {
+      returnedPoints += mark.value;
+      marks.splice(i, 1);
+    }
+  }
+  return returnedPoints;
+}
+
 function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -119,6 +138,10 @@ function update() {
     //alert("Game Over");
     document.location.reload();
   }
+
+  points += detectCollectingMark();
+
+  document.getElementById("points").innerText = points;
 
   let currentTime = Date.now();
   if (currentTime - lastTime > INTERVAL) {
