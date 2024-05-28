@@ -28,7 +28,7 @@ function initPlayer() {
 }
 
 function drawPlayer() {
-  context.fillStyle = "#0095DD";
+  context.fillStyle = "#0095DE";
   context.fillRect(player.x, player.y, player.width, player.height);
 }
 
