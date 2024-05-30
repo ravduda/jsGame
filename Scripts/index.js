@@ -8,6 +8,7 @@ let marks = [];
 let lastTime = Date.now();
 let lastMarkTime = Date.now();
 let points = 0;
+let lives = 3;
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -100,6 +101,15 @@ function detectCollision() {
       player.y < obs.y + obs.height &&
       player.height + player.y > obs.y
     ) {
+      lives--; // Zmniejsz liczbę żyć
+      document.getElementById("lives-info").innerText = `Życia: ${lives}`;
+      if (lives <= 0) {
+        alert("Game Over");
+        document.location.reload();
+      } else {
+        // Restartowanie pozycji gracza po kolizji
+        initPlayer();
+      }
       return true;
     }
   }
@@ -108,6 +118,8 @@ function detectCollision() {
 
 function detectCollectingMark() {
   let returnedPoints = 0;
+  let collectedPoints = [];
+
   for (let i = 0; i < marks.length; i++) {
     let mark = marks[i];
     if (
@@ -116,9 +128,19 @@ function detectCollectingMark() {
       player.y < mark.y + mark.radius * 2 &&
       player.height + player.y > mark.y
     ) {
+      collectedPoints.push(mark.value);
       returnedPoints += mark.value;
       marks.splice(i, 1);
+      i--;
     }
+  }
+  if (collectedPoints.length > 0) {
+    const pointsInfo = document.getElementById("points-info");
+    pointsInfo.innerText = `+ ${collectedPoints.join(", ")}`;
+
+    setTimeout(() => {
+      pointsInfo.innerText = "";
+    }, 2000);
   }
   return returnedPoints;
 }
@@ -136,12 +158,13 @@ function update() {
 
   if (detectCollision()) {
     //alert("Game Over");
-    document.location.reload();
+    return;
   }
 
   points += detectCollectingMark();
 
   document.getElementById("points").innerText = points;
+  document.getElementById("lives-info").innerText = `Życia: ${lives}`;
 
   let currentTime = Date.now();
   if (currentTime - lastTime > INTERVAL) {
