@@ -11,34 +11,34 @@ canvas {
   border: 2px solid #000000;
 }
 
+
+
 #lives-info {
-  position: absolute	;
+  position: absolute;
   top: 40%;
-  left: 67%;
-  /* transform: translateX(-50%); */
-  background-color: rgba(255, 255, 255, 0.8);
+  left: 10px;
+  background-color: rgba(235, 18, 18, 0.8);
   padding: 5px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  white-space: nowrap;
 }
 
 #points-info {
-  position: absolute	;
+  position: absolute;
   top: 50%;
-  left: 67%;
-  background-color: rgba(58, 213, 56, 0.8); /* Opcjonalne tło */
+  left: 10px;
+  background-color: rgba(58, 213, 56, 0.8); 
   padding: 5px;
-  border-radius: 5px; /*Opcjonalne zaokrąglenie*/
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Opcjonalny cień */
+  border-radius: 5px; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /
 }
 
 #points {
   position: absolute;
   top: 60%;
-  left: 67%;
-  background-color: rgba(255, 255, 255, 0.8); /* Opcjonalne tło */
+  left: 10px;
+  background-color: rgb(251, 255, 0);
   padding: 5px;
-  border-radius: 5px; /*Opcjonalne zaokrąglenie*/
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Opcjonalny cień */
+  border-radius: 5px; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
 }

@@ -9,6 +9,7 @@ let lastTime = Date.now();
 let lastMarkTime = Date.now();
 let points = 0;
 let lives = 3;
+let isPaused = false;
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -101,14 +102,14 @@ function detectCollision() {
       player.y < obs.y + obs.height &&
       player.height + player.y > obs.y
     ) {
-      lives--; // Zmniejsz liczbę żyć
+      lives--;
       document.getElementById("lives-info").innerText = `Życia: ${lives}`;
+      obstacles.splice(i, 1);
       if (lives <= 0) {
-        alert("Game Over");
+        // alert("Game Over");
         document.location.reload();
       } else {
-        // Restartowanie pozycji gracza po kolizji
-        initPlayer();
+        // initPlayer();
       }
       return true;
     }
@@ -146,6 +147,7 @@ function detectCollectingMark() {
 }
 
 function update() {
+  if (isPaused) return;
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   movePlayer();
@@ -156,8 +158,9 @@ function update() {
   drawObstacles();
   drawMarks();
 
-  if (detectCollision()) {
-    //alert("Game Over");
+  if (detectCollision() && lives <= 0) {
+    alert("Game Over");
+    document.location.reload();
     return;
   }
 
@@ -187,6 +190,11 @@ function keyDown(e) {
     player.dx = PLAYER_SPEED;
   } else if (e.key === "ArrowLeft" || e.key === "Left") {
     player.dx = -PLAYER_SPEED;
+  } else if (event.code === "Escape") {
+    isPaused = !isPaused;
+    if (!isPaused) {
+      update();
+    }
   }
 }
 
