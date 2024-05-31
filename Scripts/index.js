@@ -10,6 +10,10 @@ let lastMarkTime = Date.now();
 let points = 0;
 let lives = 3;
 let isPaused = false;
+let backgroundImage;
+let playerImage;
+let obstacleImage;
+let markImages;
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -23,37 +27,62 @@ function initCanvas() {
 function initPlayer() {
   player = {
     x: canvas.width / 2 - 15,
-    y: canvas.height - 32,
-    width: 30,
-    height: 30,
+    y: canvas.height - 72,
+    width: 70,
+    height: 70,
     dx: 0,
   };
 }
 
+function initImages() {
+  backgroundImage = new Image();
+  backgroundImage.src = "../Images/background2.png";
+  playerImage = new Image();
+  playerImage.src = "../Images/usiolek.png";
+  obstacleImage = new Image();
+  obstacleImage.src = "../Images/obstacle.png";
+
+  let mark3Image = new Image();
+  mark3Image.src = "../Images/3.png";
+  let mark4Image = new Image();
+  mark4Image.src = "../Images/4.png";
+  let mark5Image = new Image();
+  mark5Image.src = "../Images/5.png";
+
+  markImages = [mark3Image, mark4Image, mark5Image];
+}
+
 function drawPlayer() {
-  context.fillStyle = "#0095DE";
-  context.fillRect(player.x, player.y, player.width, player.height);
+  context.drawImage(
+    playerImage,
+    player.x,
+    player.y,
+    player.width,
+    player.height
+  );
 }
 
 function drawObstacles() {
-  context.fillStyle = "#FF0000";
   obstacles.forEach((obstacle) => {
-    context.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    context.drawImage(
+      obstacleImage,
+      obstacle.x,
+      obstacle.y,
+      obstacle.width,
+      obstacle.height
+    );
   });
 }
 
 function drawMarks() {
-  context.fillStyle = "#00FF00";
   marks.forEach((mark) => {
-    context.beginPath();
-    context.arc(
+    context.drawImage(
+      markImages[mark.value - 3],
       mark.x + mark.radius,
       mark.y + mark.radius,
-      mark.radius,
-      0,
-      Math.PI * 2
+      mark.radius * 2,
+      mark.radius * 2
     );
-    context.fill();
   });
 }
 
@@ -81,13 +110,13 @@ function moveMarks() {
 }
 
 function generateObstacle() {
-  const width = canvas.width / 3;
+  const width = 200;
   const x = Math.random() * (canvas.width - width);
   obstacles.push({ x, y: 0, width, height: 20 });
 }
 
 function generateMark() {
-  const radius = 10;
+  const radius = 15;
   const x = Math.random() * (canvas.width - radius * 2);
   const value = Math.floor(Math.random() * (5 - 3 + 1)) + 3;
   marks.push({ x, y: 0, radius: radius, value: value });
@@ -146,6 +175,9 @@ function detectCollectingMark() {
   return returnedPoints;
 }
 
+function showBackround() {
+  context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+}
 function update() {
   if (isPaused) return;
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -154,6 +186,7 @@ function update() {
   moveObstacles();
   moveMarks();
 
+  showBackround();
   drawPlayer();
   drawObstacles();
   drawMarks();
@@ -181,6 +214,7 @@ function update() {
   }
 
   obstacles = obstacles.filter((obstacle) => obstacle.y < canvas.height);
+  marks = marks.filter((mark) => mark.y < canvas.height);
 
   requestAnimationFrame(update);
 }
@@ -214,6 +248,7 @@ document.addEventListener("keyup", keyUp);
 
 function main() {
   initCanvas();
+  initImages();
   initPlayer();
   update();
 }
