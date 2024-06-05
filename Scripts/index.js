@@ -44,37 +44,25 @@ function initImages() {
 
 function drawObstacles() {
   obstacles.forEach((obstacle) => {
-    context.drawImage(
-      obstacleImage,
-      obstacle.x,
-      obstacle.y,
-      obstacle.width,
-      obstacle.height
-    );
+    obstacle.draw(context);
   });
 }
 
 function drawMarks() {
   marks.forEach((mark) => {
-    context.drawImage(
-      markImages[mark.value - 3],
-      mark.x + mark.radius,
-      mark.y + mark.radius,
-      mark.radius * 2,
-      mark.radius * 2
-    );
+    mark.draw(context);
   });
 }
 
 function moveObstacles() {
   obstacles.forEach((obstacle) => {
-    obstacle.y += OBSTACLE_SPEED;
+    obstacle.move();
   });
 }
 
 function moveMarks() {
   marks.forEach((mark) => {
-    mark.y += MARK_SPEED;
+    mark.move();
   });
 }
 
@@ -83,22 +71,12 @@ function generateObstacle() {
 }
 
 function generateMark() {
-  const radius = 15;
-  const x = Math.random() * (canvas.width - radius * 2);
-  const value = Math.floor(Math.random() * (5 - 3 + 1)) + 3;
-  marks.push({ x, y: 0, radius: radius, value: value });
+  marks.push(new Mark());
 }
 
 function checkCollisions() {
   for (let i = 0; i < obstacles.length; i++) {
-    if (
-      obstacles[i].detectCollision(
-        player.x,
-        player.y,
-        player.width,
-        player.height
-      )
-    ) {
+    if (obstacles[i].detectCollision(player)) {
       obstacles.splice(i, 1);
 
       lives--;
@@ -120,25 +98,20 @@ function detectCollectingMark() {
 
   for (let i = 0; i < marks.length; i++) {
     let mark = marks[i];
-    if (
-      player.x < mark.x + mark.radius * 2 &&
-      player.x + player.width > mark.x &&
-      player.y < mark.y + mark.radius * 2 &&
-      player.height + player.y > mark.y
-    ) {
+    if (marks[i].detectCollision(player)) {
       collectedPoints.push(mark.value);
       returnedPoints += mark.value;
       marks.splice(i, 1);
       i--;
     }
-  }
-  if (collectedPoints.length > 0) {
-    const pointsInfo = document.getElementById("points-info");
-    pointsInfo.innerText = `+ ${collectedPoints.join(", ")}`;
+    if (collectedPoints.length > 0) {
+      const pointsInfo = document.getElementById("points-info");
+      pointsInfo.innerText = `+ ${collectedPoints.join(", ")}`;
 
-    setTimeout(() => {
-      pointsInfo.innerText = "";
-    }, 2000);
+      setTimeout(() => {
+        pointsInfo.innerText = "";
+      }, 2000);
+    }
   }
   return returnedPoints;
 }
@@ -146,6 +119,7 @@ function detectCollectingMark() {
 function showBackround() {
   context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 }
+
 function update() {
   if (isPaused) return;
   context.clearRect(0, 0, canvas.width, canvas.height);

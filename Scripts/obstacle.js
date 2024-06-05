@@ -11,15 +11,19 @@ class Obstacle extends FallingObject {
     this.height = OBSTACLE_HEIGHT;
   }
 
-  detectCollision(x, y, width, height) {
+  detectCollision(colider) {
     if (
-      x < this.x + this.width &&
-      x + width > this.x &&
-      y < this.y + this.height &&
-      height + y > this.y
+      colider.x < this.x + this.width &&
+      colider.x + colider.width > this.x &&
+      colider.y < this.y + this.height &&
+      colider.height + colider.y > this.y
     ) {
       return true;
     }
     return false;
+  }
+
+  draw(context) {
+    context.drawImage(obstacleImage, this.x, this.y, this.width, this.height);
   }
 }
