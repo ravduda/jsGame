@@ -5,8 +5,10 @@ let player;
 
 let obstacles = [];
 let marks = [];
+let additionalLives = [];
 let lastTime = Date.now();
 let lastMarkTime = Date.now();
+let lastAdditionalLifeTime = Date.now();
 let points;
 let lives;
 let isPaused = false;
@@ -14,6 +16,7 @@ let backgroundImage;
 let playerImage;
 let obstacleImage;
 let markImages;
+let lifeImage;
 let pouseStartTime = 0;
 let gameStartTime;
 
@@ -28,18 +31,20 @@ function initCanvas() {
 
 function initImages() {
   backgroundImage = new Image();
-  backgroundImage.src = "../Images/background2.png";
+  backgroundImage.src = "Images/background2.png";
   playerImage = new Image();
-  playerImage.src = "../Images/usiolek.png";
+  playerImage.src = "Images/usiolek.png";
   obstacleImage = new Image();
-  obstacleImage.src = "../Images/obstacle.png";
+  obstacleImage.src = "Images/obstacle.png";
+  lifeImage = new Image();
+  lifeImage.src = "Images/life.png";
 
   let mark3Image = new Image();
-  mark3Image.src = "../Images/3.png";
+  mark3Image.src = "Images/3.png";
   let mark4Image = new Image();
-  mark4Image.src = "../Images/4.png";
+  mark4Image.src = "Images/4.png";
   let mark5Image = new Image();
-  mark5Image.src = "../Images/5.png";
+  mark5Image.src = "Images/5.png";
 
   markImages = [mark3Image, mark4Image, mark5Image];
 }
@@ -54,6 +59,11 @@ function moveAndDrawFallingObjects() {
     mark.move();
     mark.draw(context);
   });
+
+  additionalLives.forEach((life) => {
+    life.move();
+    life.draw(context);
+  });
 }
 
 function generateObstacle() {
@@ -62,6 +72,10 @@ function generateObstacle() {
 
 function generateMark() {
   marks.push(new Mark());
+}
+
+function generateAdditionalLife() {
+  additionalLives.push(new AdditionalLife());
 }
 
 function checkCollisions() {
@@ -83,6 +97,17 @@ function checkCollisions() {
       i--;
 
       points.addPoints(mark.value);
+    }
+  }
+
+  // Additional life collision
+  for (let i = 0; i < additionalLives.length; i++) {
+    let life = additionalLives[i];
+    if (life.detectCollision(player)) {
+      additionalLives.splice(i, 1);
+      i--;
+
+      lives.addLife();
     }
   }
 }
@@ -129,8 +154,17 @@ function update() {
     lastMarkTime = currentTime;
   }
 
+  if (
+    currentTime - lastAdditionalLifeTime + pouseTime >
+    ADDITIONAL_LIFE_INTERVAL
+  ) {
+    generateAdditionalLife();
+    lastAdditionalLifeTime = currentTime;
+  }
+
   obstacles = obstacles.filter((obstacle) => obstacle.y < canvas.height);
   marks = marks.filter((mark) => mark.y < canvas.height);
+  additionalLives = additionalLives.filter((life) => life.y < canvas.height);
 
   requestAnimationFrame(update);
 }
@@ -170,9 +204,11 @@ function loadGame() {
   points = new Points();
   obstacles = [];
   marks = [];
+  additionalLives = [];
   lastTime = Date.now();
   lastMarkTime = Date.now();
   gameStartTime = Date.now();
+  lastAdditionalLifeTime = Date.now();
 }
 
 function main() {

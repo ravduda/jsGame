@@ -11,6 +11,11 @@ class Lives {
     this.showLives();
   }
 
+  addLife() {
+    this.lives++;
+    this.showLives();
+  }
+
   showLives() {
     document.getElementById("lives-info").innerText = `Życia: ${this.lives}`;
   }
