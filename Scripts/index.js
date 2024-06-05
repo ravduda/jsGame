@@ -14,6 +14,8 @@ let backgroundImage;
 let playerImage;
 let obstacleImage;
 let markImages;
+let pouseStartTime = 0;
+let gameStartTime;
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -89,13 +91,18 @@ function showBackround() {
   context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 }
 
+function getDificulty() {
+  let currentTime = Date.now();
+  let timeDiff = currentTime - gameStartTime;
+  return 1 + timeDiff / 50000;
+}
+
 function update() {
-  if (isPaused) return;
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   showBackround();
 
-  player.movePlayer();
+  if (!isPaused) player.movePlayer();
   player.drawPlayer(context);
   moveAndDrawFallingObjects();
 
@@ -103,17 +110,21 @@ function update() {
 
   if (lives.isDead()) {
     alert("Game Over");
-    document.location.reload();
-    return;
+    loadGame();
   }
 
   let currentTime = Date.now();
-  if (currentTime - lastTime > INTERVAL) {
+  let pouseTime;
+
+  if (pouseStartTime > 0) Date.now() - pouseStartTime;
+  else pouseTime = 0;
+
+  if (currentTime - lastTime + pouseTime > INTERVAL / getDificulty()) {
     generateObstacle();
     lastTime = currentTime;
   }
 
-  if (currentTime - lastMarkTime > MARK_INTERVAL) {
+  if (currentTime - lastMarkTime + pouseTime > MARK_INTERVAL) {
     generateMark();
     lastMarkTime = currentTime;
   }
@@ -129,9 +140,11 @@ function keyDown(e) {
     player.dx = PLAYER_SPEED;
   } else if (e.key === "ArrowLeft" || e.key === "Left") {
     player.dx = -PLAYER_SPEED;
-  } else if (e.code === "Escape") {
+  } else if (e.code === "Escape" || e.code === "Space") {
     isPaused = !isPaused;
+    pouseStartTime = Date.now();
     if (!isPaused) {
+      pouseStartTime = 0;
       update();
     }
   }
@@ -151,11 +164,20 @@ function keyUp(e) {
 document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);
 
-function main() {
-  initCanvas();
-  initImages();
+function loadGame() {
   lives = new Lives();
   player = new Player(playerImage);
   points = new Points();
+  obstacles = [];
+  marks = [];
+  lastTime = Date.now();
+  lastMarkTime = Date.now();
+  gameStartTime = Date.now();
+}
+
+function main() {
+  initCanvas();
+  initImages();
+  loadGame();
   update();
 }

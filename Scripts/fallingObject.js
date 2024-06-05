@@ -12,6 +12,10 @@ class FallingObject {
   }
 
   move() {
+    if (isPaused) {
+      this.lastUpdateTime = Date.now();
+      return;
+    }
     let currentTime = Date.now();
     let deltaTime = currentTime - this.lastUpdateTime;
     this.y += (this.speed * deltaTime) / 1000;
