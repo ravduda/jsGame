@@ -24,16 +24,6 @@ function initCanvas() {
   document.body.appendChild(canvas);
 }
 
-function initPlayer() {
-  player = {
-    x: canvas.width / 2 - 15,
-    y: canvas.height - 72,
-    width: 70,
-    height: 70,
-    dx: 0,
-  };
-}
-
 function initImages() {
   backgroundImage = new Image();
   backgroundImage.src = "../Images/background2.png";
@@ -50,16 +40,6 @@ function initImages() {
   mark5Image.src = "../Images/5.png";
 
   markImages = [mark3Image, mark4Image, mark5Image];
-}
-
-function drawPlayer() {
-  context.drawImage(
-    playerImage,
-    player.x,
-    player.y,
-    player.width,
-    player.height
-  );
 }
 
 function drawObstacles() {
@@ -86,17 +66,6 @@ function drawMarks() {
   });
 }
 
-function movePlayer() {
-  player.x += player.dx;
-
-  if (player.x < 0) {
-    player.x = 0;
-  }
-  if (player.x + player.width > canvas.width) {
-    player.x = canvas.width - player.width;
-  }
-}
-
 function moveObstacles() {
   obstacles.forEach((obstacle) => {
     obstacle.y += OBSTACLE_SPEED;
@@ -110,9 +79,7 @@ function moveMarks() {
 }
 
 function generateObstacle() {
-  const width = 200;
-  const x = Math.random() * (canvas.width - width);
-  obstacles.push({ x, y: 0, width, height: 20 });
+  obstacles.push(new Obstacle());
 }
 
 function generateMark() {
@@ -122,28 +89,29 @@ function generateMark() {
   marks.push({ x, y: 0, radius: radius, value: value });
 }
 
-function detectCollision() {
+function checkCollisions() {
   for (let i = 0; i < obstacles.length; i++) {
-    let obs = obstacles[i];
     if (
-      player.x < obs.x + obs.width &&
-      player.x + player.width > obs.x &&
-      player.y < obs.y + obs.height &&
-      player.height + player.y > obs.y
+      obstacles[i].detectCollision(
+        player.x,
+        player.y,
+        player.width,
+        player.height
+      )
     ) {
+      obstacles.splice(i, 1);
+
       lives--;
       document.getElementById("lives-info").innerText = `Życia: ${lives}`;
-      obstacles.splice(i, 1);
+
       if (lives <= 0) {
         // alert("Game Over");
         document.location.reload();
       } else {
         // initPlayer();
       }
-      return true;
     }
   }
-  return false;
 }
 
 function detectCollectingMark() {
@@ -182,16 +150,18 @@ function update() {
   if (isPaused) return;
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  movePlayer();
+  player.movePlayer();
   moveObstacles();
   moveMarks();
 
   showBackround();
-  drawPlayer();
+  player.drawPlayer(context);
   drawObstacles();
   drawMarks();
 
-  if (detectCollision() && lives <= 0) {
+  checkCollisions();
+
+  if (lives <= 0) {
     alert("Game Over");
     document.location.reload();
     return;
@@ -224,7 +194,7 @@ function keyDown(e) {
     player.dx = PLAYER_SPEED;
   } else if (e.key === "ArrowLeft" || e.key === "Left") {
     player.dx = -PLAYER_SPEED;
-  } else if (event.code === "Escape") {
+  } else if (e.code === "Escape") {
     isPaused = !isPaused;
     if (!isPaused) {
       update();
@@ -249,6 +219,6 @@ document.addEventListener("keyup", keyUp);
 function main() {
   initCanvas();
   initImages();
-  initPlayer();
+  player = new Player(playerImage);
   update();
 }
