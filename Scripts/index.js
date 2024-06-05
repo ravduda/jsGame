@@ -42,27 +42,15 @@ function initImages() {
   markImages = [mark3Image, mark4Image, mark5Image];
 }
 
-function drawObstacles() {
-  obstacles.forEach((obstacle) => {
-    obstacle.draw(context);
-  });
-}
-
-function drawMarks() {
-  marks.forEach((mark) => {
-    mark.draw(context);
-  });
-}
-
-function moveObstacles() {
+function moveAndDrawFallingObjects() {
   obstacles.forEach((obstacle) => {
     obstacle.move();
+    obstacle.draw(context);
   });
-}
 
-function moveMarks() {
   marks.forEach((mark) => {
     mark.move();
+    mark.draw(context);
   });
 }
 
@@ -108,12 +96,8 @@ function update() {
   showBackround();
 
   player.movePlayer();
-  moveObstacles();
-  moveMarks();
-
   player.drawPlayer(context);
-  drawObstacles();
-  drawMarks();
+  moveAndDrawFallingObjects();
 
   checkCollisions();
 
