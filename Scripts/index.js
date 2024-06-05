@@ -7,7 +7,7 @@ let obstacles = [];
 let marks = [];
 let lastTime = Date.now();
 let lastMarkTime = Date.now();
-let points = 0;
+let points;
 let lives;
 let isPaused = false;
 let backgroundImage;
@@ -75,37 +75,26 @@ function generateMark() {
 }
 
 function checkCollisions() {
+  // Obstacles collision
   for (let i = 0; i < obstacles.length; i++) {
     if (obstacles[i].detectCollision(player)) {
       obstacles.splice(i, 1);
+      i--;
 
       lives.removeLife();
     }
   }
-}
 
-function detectCollectingMark() {
-  let returnedPoints = 0;
-  let collectedPoints = [];
-
+  // Marks collision
   for (let i = 0; i < marks.length; i++) {
     let mark = marks[i];
-    if (marks[i].detectCollision(player)) {
-      collectedPoints.push(mark.value);
-      returnedPoints += mark.value;
+    if (mark.detectCollision(player)) {
       marks.splice(i, 1);
       i--;
-    }
-    if (collectedPoints.length > 0) {
-      const pointsInfo = document.getElementById("points-info");
-      pointsInfo.innerText = `+ ${collectedPoints.join(", ")}`;
 
-      setTimeout(() => {
-        pointsInfo.innerText = "";
-      }, 2000);
+      points.addPoints(mark.value);
     }
   }
-  return returnedPoints;
 }
 
 function showBackround() {
@@ -116,11 +105,12 @@ function update() {
   if (isPaused) return;
   context.clearRect(0, 0, canvas.width, canvas.height);
 
+  showBackround();
+
   player.movePlayer();
   moveObstacles();
   moveMarks();
 
-  showBackround();
   player.drawPlayer(context);
   drawObstacles();
   drawMarks();
@@ -132,10 +122,6 @@ function update() {
     document.location.reload();
     return;
   }
-
-  points += detectCollectingMark();
-
-  document.getElementById("points").innerText = points;
 
   let currentTime = Date.now();
   if (currentTime - lastTime > INTERVAL) {
@@ -186,5 +172,6 @@ function main() {
   initImages();
   lives = new Lives();
   player = new Player(playerImage);
+  points = new Points();
   update();
 }
