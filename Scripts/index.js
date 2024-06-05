@@ -17,8 +17,12 @@ let playerImage;
 let obstacleImage;
 let markImages;
 let lifeImage;
+let startScreenImage;
+let gameOverImage;
 let pouseStartTime = 0;
 let gameStartTime;
+let isGameOver;
+let hasGameStarted = false;
 
 function initCanvas() {
   canvas = document.createElement("canvas");
@@ -38,6 +42,10 @@ function initImages() {
   obstacleImage.src = "Images/obstacle.png";
   lifeImage = new Image();
   lifeImage.src = "Images/life.png";
+  startScreenImage = new Image();
+  startScreenImage.src = "Images/startScreen.png";
+  gameOverImage = new Image();
+  gameOverImage.src = "Images/gameOver.png";
 
   let mark3Image = new Image();
   mark3Image.src = "Images/3.png";
@@ -126,6 +134,14 @@ function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   showBackround();
+  if (isGameOver) {
+    context.drawImage(gameOverImage, 150, 75, 300, 150);
+    return;
+  }
+
+  if (!hasGameStarted) {
+    context.drawImage(startScreenImage, 150, 75, 300, 150);
+  }
 
   if (!isPaused) player.movePlayer();
   player.drawPlayer(context);
@@ -134,8 +150,7 @@ function update() {
   checkCollisions();
 
   if (lives.isDead()) {
-    alert("Game Over");
-    loadGame();
+    isGameOver = true;
   }
 
   let currentTime = Date.now();
@@ -174,11 +189,22 @@ function keyDown(e) {
     player.dx = PLAYER_SPEED;
   } else if (e.key === "ArrowLeft" || e.key === "Left") {
     player.dx = -PLAYER_SPEED;
-  } else if (e.code === "Escape" || e.code === "Space") {
+  } else if (e.code === "Escape") {
+    if (!hasGameStarted) return;
     isPaused = !isPaused;
     pouseStartTime = Date.now();
     if (!isPaused) {
       pouseStartTime = 0;
+      update();
+    }
+  } else if (e.code === "Space") {
+    if (isGameOver || !hasGameStarted) {
+      loadGame();
+      hasGameStarted = true;
+      isPaused = false;
+      pouseStartTime = 0;
+
+      isGameOver = false;
       update();
     }
   }
@@ -209,11 +235,15 @@ function loadGame() {
   lastMarkTime = Date.now();
   gameStartTime = Date.now();
   lastAdditionalLifeTime = Date.now();
+  isGameOver = false;
+  isPaused = true;
+  pouseStartTime = Date.now();
+
+  update();
 }
 
 function main() {
   initCanvas();
   initImages();
   loadGame();
-  update();
 }
