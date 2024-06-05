@@ -8,7 +8,7 @@ let marks = [];
 let lastTime = Date.now();
 let lastMarkTime = Date.now();
 let points = 0;
-let lives = 3;
+let lives;
 let isPaused = false;
 let backgroundImage;
 let playerImage;
@@ -79,15 +79,7 @@ function checkCollisions() {
     if (obstacles[i].detectCollision(player)) {
       obstacles.splice(i, 1);
 
-      lives--;
-      document.getElementById("lives-info").innerText = `Życia: ${lives}`;
-
-      if (lives <= 0) {
-        // alert("Game Over");
-        document.location.reload();
-      } else {
-        // initPlayer();
-      }
+      lives.removeLife();
     }
   }
 }
@@ -135,7 +127,7 @@ function update() {
 
   checkCollisions();
 
-  if (lives <= 0) {
+  if (lives.isDead()) {
     alert("Game Over");
     document.location.reload();
     return;
@@ -144,7 +136,6 @@ function update() {
   points += detectCollectingMark();
 
   document.getElementById("points").innerText = points;
-  document.getElementById("lives-info").innerText = `Życia: ${lives}`;
 
   let currentTime = Date.now();
   if (currentTime - lastTime > INTERVAL) {
@@ -193,6 +184,7 @@ document.addEventListener("keyup", keyUp);
 function main() {
   initCanvas();
   initImages();
+  lives = new Lives();
   player = new Player(playerImage);
   update();
 }

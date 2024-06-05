@@ -13,3 +13,5 @@ const INTERVAL = 4000;
 const OBSTACLE_SPEED = 250;
 const OBSTACLE_WIDTH = 200;
 const OBSTACLE_HEIGHT = 20;
+
+const START_LIVES = 3;
