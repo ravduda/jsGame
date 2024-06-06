@@ -127,7 +127,7 @@ function showBackround() {
 function getDificulty() {
   let currentTime = Date.now();
   let timeDiff = currentTime - gameStartTime;
-  return 1 + timeDiff / 50000;
+  return 1 + timeDiff / DIFFICULTY_FACTOR;
 }
 
 function update() {

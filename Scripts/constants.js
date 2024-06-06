@@ -20,3 +20,4 @@ const LIFE_WIDTH = 80;
 const LIFE_HEIGHT = 30;
 
 const START_LIVES = 3;
+const DIFFICULTY_FACTOR = 30000;
