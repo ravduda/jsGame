@@ -35,7 +35,7 @@ function initCanvas() {
 
 function initImages() {
   backgroundImage = new Image();
-  backgroundImage.src = "Images/background2.png";
+  backgroundImage.src = "Images/background.png";
   playerImage = new Image();
   playerImage.src = "Images/usiolek.png";
   obstacleImage = new Image();
