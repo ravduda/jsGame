@@ -19,7 +19,7 @@ let markImages;
 let lifeImage;
 let startScreenImage;
 let gameOverImage;
-let pouseStartTime = 0;
+let pauseStartTime = 0;
 let gameStartTime;
 let isGameOver;
 let hasGameStarted = false;
@@ -154,23 +154,23 @@ function update() {
   }
 
   let currentTime = Date.now();
-  let pouseTime;
+  let pauseTime;
 
-  if (pouseStartTime > 0) Date.now() - pouseStartTime;
-  else pouseTime = 0;
+  if (pauseStartTime > 0) Date.now() - pauseStartTime;
+  else pauseTime = 0;
 
-  if (currentTime - lastTime + pouseTime > INTERVAL / getDificulty()) {
+  if (currentTime - lastTime + pauseTime > INTERVAL / getDificulty()) {
     generateObstacle();
     lastTime = currentTime;
   }
 
-  if (currentTime - lastMarkTime + pouseTime > MARK_INTERVAL) {
+  if (currentTime - lastMarkTime + pauseTime > MARK_INTERVAL) {
     generateMark();
     lastMarkTime = currentTime;
   }
 
   if (
-    currentTime - lastAdditionalLifeTime + pouseTime >
+    currentTime - lastAdditionalLifeTime + pauseTime >
     ADDITIONAL_LIFE_INTERVAL
   ) {
     generateAdditionalLife();
@@ -192,9 +192,9 @@ function keyDown(e) {
   } else if (e.code === "Escape") {
     if (!hasGameStarted) return;
     isPaused = !isPaused;
-    pouseStartTime = Date.now();
+    pauseStartTime = Date.now();
     if (!isPaused) {
-      pouseStartTime = 0;
+      pauseStartTime = 0;
       update();
     }
   } else if (e.code === "Space") {
@@ -202,7 +202,7 @@ function keyDown(e) {
       loadGame();
       hasGameStarted = true;
       isPaused = false;
-      pouseStartTime = 0;
+      pauseStartTime = 0;
 
       isGameOver = false;
       update();
@@ -237,7 +237,7 @@ function loadGame() {
   lastAdditionalLifeTime = Date.now();
   isGameOver = false;
   isPaused = true;
-  pouseStartTime = Date.now();
+  pauseStartTime = Date.now();
 
   update();
 }
